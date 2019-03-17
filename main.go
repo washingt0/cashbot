@@ -13,7 +13,7 @@ import (
 
 func main() {
 	token := ""
-	if val, set := os.LookupEnv("API_TOKEN"); set {
+	if val, set := os.LookupEnv("CASHBOT_API_TOKEN"); set {
 		token = val
 	} else {
 		log.Fatal("No API token was supplied")
@@ -24,7 +24,11 @@ func main() {
 		log.Panic(err)
 	}
 
-	bot.Debug = true
+	debug := false
+	if _, set := os.LookupEnv("CASHBOT_DEBUG"); set {
+		debug = true
+	}
+	bot.Debug = debug
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
