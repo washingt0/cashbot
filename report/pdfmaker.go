@@ -79,16 +79,18 @@ func GeneratePDF(data []database.Entry, user string) string {
 	tou := 0.0
 
 	for _, x := range data {
-		pdf.SetX(MARGIN)
-		pdf.CellFormat(w/3.0, 6, tr(x.CreatedAt.Format("2006/01/02 15:04")), "1", 0, "", true, 0, "")
 		var out string
 		if x.Payment {
 			out = "-"
 			tou += x.Value
+			pdf.SetFillColor(229, 126, 105)
 		} else {
 			out = "+"
 			tin += x.Value
+			pdf.SetFillColor(186, 247, 165)
 		}
+		pdf.SetX(MARGIN)
+		pdf.CellFormat(w/3.0, 6, tr(x.CreatedAt.Format("2006/01/02 15:04")), "1", 0, "", true, 0, "")
 		pdf.CellFormat(w/3.0, 6, tr(out+strconv.FormatFloat(x.Value, 'f', 2, 64)), "1", 0, "", true, 0, "")
 		pdf.CellFormat(w/3.0, 6, tr(x.Description), "1", 0, "", true, 0, "")
 		pdf.Ln(-1)
@@ -97,8 +99,15 @@ func GeneratePDF(data []database.Entry, user string) string {
 
 	pdf.SetFillColor(225, 225, 225)
 	pdf.SetFont("Helvetica", "B", 10)
+	pdf.SetTextColor(46, 81, 35)
 	pdf.CellFormat(w/3.0, 7, tr("Total in: ")+strconv.FormatFloat(tin, 'f', 2, 64), "1", 0, "R", true, 0, "")
+	pdf.SetTextColor(140, 37, 11)
 	pdf.CellFormat(w/3.0, 7, tr("Total out: ")+strconv.FormatFloat(tou, 'f', 2, 64), "1", 0, "R", true, 0, "")
+	if (tin - tou) >= 0 {
+		pdf.SetTextColor(46, 81, 35)
+	} else {
+		pdf.SetTextColor(140, 37, 11)
+	}
 	pdf.CellFormat(w/3.0, 7, tr("Balance: ")+strconv.FormatFloat(tin-tou, 'f', 2, 64), "1", 0, "R", true, 0, "")
 
 	err = pdf.OutputFileAndClose(filename)
