@@ -58,6 +58,11 @@ func parseMessage(text string, mgo *mongo.Client, e *database.Entry) (string, bo
 
 	} else if text == "/getweekreport" {
 
+	} else if text == "/clear" {
+		if err := e.DropEntries(mgo); err != nil {
+			return "", false, false, err
+		}
+		return "Okay, everything is gone. ;)", false, false, nil
 	} else {
 		state, err := getState(e.Owner)
 		if err != nil {

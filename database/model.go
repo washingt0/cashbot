@@ -61,3 +61,18 @@ func (e *Entry) GetOwnerEntries(mgo *mongo.Client) ([]Entry, error) {
 
 	return data, nil
 }
+
+func (e *Entry) DropEntries(mgo *mongo.Client) error {
+	if e.Owner == "" {
+		return errors.New("Sorry, I didn't recognize you")
+	}
+	coll := mgo.Database("cashbot").Collection("entries")
+
+	_, err := coll.DeleteMany(context.Background(), bson.D{
+		{"owner", e.Owner},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
