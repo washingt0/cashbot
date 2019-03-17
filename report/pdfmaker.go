@@ -17,7 +17,7 @@ const (
 )
 
 func GeneratePDF(data []database.Entry, user string) string {
-	filename := filepath.Join(os.TempDir(), strconv.FormatInt(time.Now().UnixNano(), 10)+"report"+user+".pdf")
+	filename := filepath.Join(os.TempDir(), strconv.FormatInt(time.Now().UnixNano(), 10)+"_report_"+user+".pdf")
 	var err error
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
@@ -42,8 +42,8 @@ func GeneratePDF(data []database.Entry, user string) string {
 		pw -= 2 * MARGIN
 		cellW := pw / 3
 		pdf.CellFormat(cellW, 10, title, "", 0, "L", false, 0, "")
-		pdf.CellFormat(cellW, 10, tr(fmt.Sprintf("Página %d/{nb}", pdf.PageNo())), "", 0, "C", false, 0, "")
-		pdf.CellFormat(cellW, 10, time.Now().Format("02/01/2006 15:04"), "", 0, "R", false, 0, "")
+		pdf.CellFormat(cellW, 10, tr(fmt.Sprintf("Page %d/{nb}", pdf.PageNo())), "", 0, "C", false, 0, "")
+		pdf.CellFormat(cellW, 10, time.Now().Format("2006/01/02 15:04"), "", 0, "R", false, 0, "")
 	})
 
 	pdf.AliasNbPages("")
@@ -54,7 +54,7 @@ func GeneratePDF(data []database.Entry, user string) string {
 
 	if len(data) == 0 {
 		pdf.SetFont("Arial", "B", 16)
-		pdf.Text(30, 110, tr("NÃO HÁ DADOS"))
+		pdf.Text(30, 110, tr("There is no data :'( "))
 		pdf.OutputFileAndClose(filename)
 		return filename
 	}
