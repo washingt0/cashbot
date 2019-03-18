@@ -27,15 +27,31 @@ func (e *Entry) AddEntry(mgo *mongo.Client) error {
 	return nil
 }
 
-func (e *Entry) GetOwnerEntries(mgo *mongo.Client) ([]Entry, error) {
+func (e *Entry) GetOwnerEntries(mgo *mongo.Client, start *time.Time, end *time.Time) ([]Entry, error) {
 	if e.Owner == "" {
 		return []Entry{}, errors.New("Sorry, I didn't recognize you")
 	}
 
+	var filter bson.D
+
+	if start == nil && end == nil {
+		filter = bson.D{
+			{"owner", e.Owner},
+		}
+	} else {
+		filter = bson.D{
+			{"owner", e.Owner},
+			{"createdat",
+				bson.D{
+					{"$gte", start},
+					{"$lt", end},
+				},
+			},
+		}
+	}
+
 	coll := mgo.Database("cashbot").Collection("entries")
-	cur, err := coll.Find(context.Background(), bson.D{
-		{"owner", e.Owner},
-	}, &options.FindOptions{
+	cur, err := coll.Find(context.Background(), filter, &options.FindOptions{
 		Sort: bson.D{
 			{"createdat", 1},
 		},

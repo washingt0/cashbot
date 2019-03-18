@@ -43,21 +43,35 @@ func parseMessage(text string, mgo *mongo.Client, e *database.Entry) (string, bo
 		}
 		return "Send the entry information, something like this: `14.00 pot`. If the value was less than zero, I will mark it as a payment", true, false, nil
 	} else if text == "/getreport" {
-		if data, err := e.GetOwnerEntries(mgo); err != nil {
+		if data, err := e.GetOwnerEntries(mgo, nil, nil); err != nil {
 			return "", false, false, err
 		} else {
 			return makeTable(data), true, false, nil
 		}
 	} else if text == "/getpdfreport" {
-		if data, err := e.GetOwnerEntries(mgo); err != nil {
+		if data, err := e.GetOwnerEntries(mgo, nil, nil); err != nil {
 			return "", false, false, err
 		} else {
 			return report.GeneratePDF(data, e.Owner), false, true, nil
 		}
+	} else if text == "/getdayreport" {
+		now := time.Now()
+		start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+		end := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+		if data, err := e.GetOwnerEntries(mgo, &start, &end); err != nil {
+			return "", false, false, err
+		} else {
+			return makeTable(data), true, false, nil
+		}
 	} else if text == "/getmonthreport" {
-
-	} else if text == "/getweekreport" {
-
+		now := time.Now()
+		start := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		end := time.Date(now.Year(), now.Month()+1, 1, 0, 0, 0, 0, now.Location())
+		if data, err := e.GetOwnerEntries(mgo, &start, &end); err != nil {
+			return "", false, false, err
+		} else {
+			return makeTable(data), true, false, nil
+		}
 	} else if text == "/clear" {
 		if err := e.DropEntries(mgo); err != nil {
 			return "", false, false, err
