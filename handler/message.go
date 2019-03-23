@@ -35,8 +35,20 @@ func IncomingMessageHandler(m *tgbotapi.Message, mgo *mongo.Client) (tgbotapi.Me
 
 func parseMessage(text string, mgo *mongo.Client, e *database.Entry) (string, bool, bool, error) {
 
-	if text == "/start" || text == "/help" {
-		return "Send the `/addentry` command to insert a new entry with this format `<VALUE> <DESCRIPTION>`", true, false, nil
+	if text == "/start" {
+		return "Send the /addentry command to insert a new entry with this format `<VALUE> <DESCRIPTION>` or /help", false, false, nil
+	} else if text == "/help" {
+		return `
+/start - Start a conversation with the bot
+/addentry - Prepare the bot to receive a entry information
+/getreport - Ask the bot to produce a report from your information
+/getdayreport - Ask the bot to produce a report with the day information
+/getmonthreport - Ask the bot to produce a report with the month information
+/getpdfreport - Ask the bot to produce a PDF report from your information
+/removelast - Ask the bot to remove the last entry
+/clear - Ask the bot to clear all your data
+/help - Display this help message
+`, false, false, nil
 	} else if text == "/addentry" {
 		if err := setState(e.Owner, 1); err != nil {
 			return "", false, false, err
@@ -72,6 +84,11 @@ func parseMessage(text string, mgo *mongo.Client, e *database.Entry) (string, bo
 		} else {
 			return makeTable(data), true, false, nil
 		}
+	} else if text == "/removelast" {
+		if err := e.DropLastEntry(mgo); err != nil {
+			return "", false, false, err
+		}
+		return "Okay, it's gone. ;)", false, false, nil
 	} else if text == "/clear" {
 		if err := e.DropEntries(mgo); err != nil {
 			return "", false, false, err

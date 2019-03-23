@@ -78,6 +78,32 @@ func (e *Entry) GetOwnerEntries(mgo *mongo.Client, start *time.Time, end *time.T
 	return data, nil
 }
 
+func (e *Entry) DropLastEntry(mgo *mongo.Client) error {
+	if e.Owner == "" {
+		return errors.New("Sorry, I didn't recognize you")
+	}
+	coll := mgo.Database("cashbot").Collection("entries")
+
+	doc := coll.FindOne(context.Background(), bson.D{
+		{"owner", e.Owner},
+	}, &options.FindOneOptions{Sort: bson.D{
+		{"createdat", -1},
+	}})
+
+	if bytes, err := doc.DecodeBytes(); err != nil {
+		return err
+	} else {
+		_id := bytes.Lookup("_id").ObjectID()
+
+		if _, err := coll.DeleteOne(context.Background(), bson.D{
+			{"_id", _id},
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (e *Entry) DropEntries(mgo *mongo.Client) error {
 	if e.Owner == "" {
 		return errors.New("Sorry, I didn't recognize you")
