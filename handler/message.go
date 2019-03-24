@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -251,6 +252,8 @@ func makeTable(data []database.Entry) string {
 		out += strconv.FormatFloat(e.Value, 'f', 2, 64)
 		out += " | "
 		out += e.Description
+		out += " | "
+		out += fmt.Sprintf("%+v", e.Tags)
 		out += `
 `
 	}

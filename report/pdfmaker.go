@@ -64,8 +64,8 @@ func GeneratePDF(data []database.Entry, user string) string {
 	pdf.SetX(MARGIN)
 	w, _ := pdf.GetPageSize()
 	w -= 2 * MARGIN
-	for _, i := range []string{"Date", "Value", "Description"} {
-		pdf.CellFormat(w/3.0, 7, tr(i), "1", 0, "", true, 0, "")
+	for _, i := range []string{"Date", "Value", "Description", "Tags"} {
+		pdf.CellFormat(w/4.0, 7, tr(i), "1", 0, "", true, 0, "")
 	}
 	pdf.Ln(-1)
 	pdf.SetTextColor(0, 0, 0)
@@ -90,9 +90,10 @@ func GeneratePDF(data []database.Entry, user string) string {
 			pdf.SetFillColor(186, 247, 165)
 		}
 		pdf.SetX(MARGIN)
-		pdf.CellFormat(w/3.0, 6, tr(x.CreatedAt.Format("2006/01/02 15:04")), "1", 0, "", true, 0, "")
-		pdf.CellFormat(w/3.0, 6, tr(out+strconv.FormatFloat(x.Value, 'f', 2, 64)), "1", 0, "", true, 0, "")
-		pdf.CellFormat(w/3.0, 6, tr(x.Description), "1", 0, "", true, 0, "")
+		pdf.CellFormat(w/4.0, 6, tr(x.CreatedAt.Format("2006/01/02 15:04")), "1", 0, "", true, 0, "")
+		pdf.CellFormat(w/4.0, 6, tr(out+strconv.FormatFloat(x.Value, 'f', 2, 64)), "1", 0, "", true, 0, "")
+		pdf.CellFormat(w/4.0, 6, tr(x.Description), "1", 0, "", true, 0, "")
+		pdf.CellFormat(w/4.0, 6, tr(fmt.Sprintf("%+v", x.Tags)), "1", 0, "", true, 0, "")
 		pdf.Ln(-1)
 		fill = !fill
 	}
