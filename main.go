@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"os"
-	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/washingt0/cashbot/database"
@@ -42,7 +41,7 @@ func main() {
 			continue
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 55*time.Second)
+		ctx, cancel := context.WithCancel(context.TODO())
 
 		client, err := database.ConnectMongo(ctx)
 		if err != nil {
@@ -63,6 +62,7 @@ func main() {
 			bot.Send(msg)
 		}
 
+		client.Disconnect(ctx)
 		cancel()
 	}
 }
