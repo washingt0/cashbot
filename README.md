@@ -1,6 +1,7 @@
 ## CashBot
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/71a01800fa1e44118a0ff8fa3471b867)](https://app.codacy.com/app/washingt0/cashbot?utm_source=github.com&utm_medium=referral&utm_content=washingt0/cashbot&utm_campaign=Badge_Grade_Dashboard)
+[![Go Report Card](https://goreportcard.com/badge/github.com/washingt0/cashbot)](https://goreportcard.com/report/github.com/washingt0/cashbot)
 
 ### Requirements
 *   MongoDB
